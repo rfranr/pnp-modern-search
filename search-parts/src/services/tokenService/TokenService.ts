@@ -139,6 +139,7 @@ export class TokenService implements ITokenService {
             inputString = this.replaceGroupTokens(inputString);
             inputString = this.replaceLegacyPageContextTokens(inputString);
             inputString = await this.replaceHubTokens(inputString);
+            inputString = this.replaceLocalStorageTokens(inputString);
 
             inputString = inputString.replace(/\{TenantUrl\}/gi, `https://` + window.location.host);
 
@@ -625,6 +626,45 @@ export class TokenService implements ITokenService {
                 const legacyProp = matches[1];
                 inputString = inputString.replace(new RegExp(matches[0], "gi"), this.pageContext.legacyPageContext ? ObjectHelper.byPath(this.pageContext.legacyPageContext, legacyProp) : '');
                 matches = legacyPageContextRegExp.exec(inputString);
+            }
+        }
+
+        return inputString;
+    }
+
+    /**
+     * Resolve local storage page tokens
+     * @param inputString the input string containing tokens
+     */
+    private replaceLocalStorageTokens(inputString: string): string {
+        
+        const localStorageRegExpWithProps = /\{LocalStorage\[.*?\]\.(.*?)\}/gi;
+        const localStorageRegExp = /\{LocalStorage\[(.*?)\].*}/gi;
+        let matches = localStorageRegExp.exec(inputString);
+        let matchesWithProps = localStorageRegExpWithProps.exec(inputString);
+
+        if (matches!= null) {
+            const localStorageKey = matches[1];
+
+            if ( matchesWithProps!== null) {
+                let value;
+                try {
+                    value = JSON.parse(localStorage[localStorageKey]);
+                }
+                catch {
+                    value = {}
+                }
+
+                while (matchesWithProps!== null) {
+                    const localStorageProp = matchesWithProps[1];
+                    const matches0 = matchesWithProps[0].replace(/[[\]\\]/g, '\\$&');
+                    
+                    inputString = inputString.replace(new RegExp(matches0, "gi"), ObjectHelper.byPath(value, localStorageProp) );
+                    matchesWithProps = localStorageRegExpWithProps.exec(inputString);
+                }
+            }
+            else {
+                inputString = inputString.replace(matches[0], localStorage[localStorageKey] ? localStorage[localStorageKey] : '');
             }
         }
 

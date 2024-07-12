@@ -53,6 +53,9 @@ Tokens related to connected Web Parts in the Search Results.
 |**{CurrentDisplayLanguage}** <br/> |The current display language based on MUI in _ll-cc format_.  <br/> |
 |**{CurrentDisplayLCID}**  <br/> |Numeric value of the current display language based on MUI in _ll-cc format_.  <br/> |
 |**{TenantUrl}**  <br/> |URL of the tenant (root site)<br/> |
+|**{LocalStorage[\<Key\>]}**  <br/> |A value from local storage associated with the specified key. For example, if you have a value stored in local storage with the key userSettings, you could obtain the value by specifying {LocalStorage[userSettings]}<br/> |
+|**{LocalStorage[\<Key\>]}.\<PropertyName\>}**  <br/> |A property value from a JSON object stored in local storage associated with the specified key. For example, if you have a JSON object stored in local storage with the key userSettings and the object has a property theme, you could obtain the value by specifying {LocalStorage[userSettings].theme}.<br/> |
+
 
 ##### Site, web, hub, etc. tokens
 
